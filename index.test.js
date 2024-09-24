@@ -16,11 +16,32 @@ describe("./musicians endpoint", () => {
 		expect(response.statusCode).toBe(200)
 	})
 	it("testing musicians properties", async () => {
-		const response = await request(app).get("/musicians")
+		const response = await request(app).get("/musicians/1")
 		const responseData = JSON.parse(response.text)
-		expect(responseData[0].name).toBe("Mick Jagger")
-		expect(responseData[1].instrument).toBe("Voice")
-		expect(responseData[2].id).toBe(3)
+		expect(responseData.name).toBe("Mick Jagger")
+		expect(responseData.instrument).toBe("Voice")
+		expect(responseData.id).toBe(1)
+	})
+	it("testing create endpoint", async () => {
+		const newMusician = { name: "Stevie", instrument: "Voice" }
+
+		const response = await request(app).post("/musicians/new").send(newMusician).expect(200)
+
+		const createdMusician = await Musician.findByPk(response.body.id)
+		expect(createdMusician.instrument).toBe(newMusician.instrument)
+	})
+
+	it("testing update endpoint", async () => {
+		const update = { name: "Stevie Wonder" }
+		const response = await request(app).put("/musicians/4").send(update).expect(200)
+		const musician = await Musician.findByPk(4)
+		expect(musician.name).toBe("Stevie Wonder")
+	})
+
+	it("testing delete endpoint", async () => {
+		const response = await request(app).delete("/musicians/4").expect(200)
+		const musicians = await Musician.findAll({})
+		expect(musicians.length).toBe(3)
 	})
 })
 
