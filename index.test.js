@@ -10,7 +10,6 @@ const app = require("./src/app")
 const { seedMusician } = require("./seedData")
 
 describe("./musicians endpoint", () => {
-	// Write your tests here
 	it("testing musicians endpoint", async () => {
 		const response = await request(app).get("/musicians")
 		expect(response.statusCode).toBe(200)
