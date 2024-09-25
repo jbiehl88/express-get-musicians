@@ -1,5 +1,5 @@
 const express = require("express")
-const { Musician, Band } = require("../models/index")
+const { Musician } = require("../models/index")
 const app = require("../src/app")
 
 const musicianRouter = express.Router()
