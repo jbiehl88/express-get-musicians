@@ -42,6 +42,28 @@ describe("./musicians endpoint", () => {
 		const musicians = await Musician.findAll({})
 		expect(musicians.length).toBe(3)
 	})
+	it("checks validator errors - no name", async () => {
+		const response = await request(app).post("/musicians/new").send({ instrument: "Voice" })
+		expect(response.body.error).toContainEqual(
+			expect.objectContaining({
+				type: "field",
+				msg: "Invalid value",
+				path: "name",
+				location: "body",
+			})
+		)
+	})
+	it("checks validator errors - no instrument", async () => {
+		const response = await request(app).post("/musicians/new").send({ name: "IDGA" })
+		expect(response.body.error).toContainEqual(
+			expect.objectContaining({
+				type: "field",
+				msg: "Invalid value",
+				path: "instrument",
+				location: "body",
+			})
+		)
+	})
 })
 
 describe("Bands", () => {
