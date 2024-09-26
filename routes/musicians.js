@@ -16,20 +16,29 @@ musicianRouter.get("/:id", async (req, res) => {
 	res.json(musician)
 })
 
-musicianRouter.post("/new", [check(["name", "instrument"]).not().isEmpty().trim()], async (req, res) => {
+musicianRouter.post(
+	"/new",
+	[check(["name", "instrument"]).not().isEmpty().trim(), check(["name", "instrument"]).isLength({ min: 2, max: 20 })],
+	async (req, res) => {
+		const errors = validationResult(req)
+		if (!errors.isEmpty()) {
+			res.json({ error: errors.array() })
+		} else {
+			const createMusician = await Musician.create(req.body)
+			res.json(createMusician)
+		}
+	}
+)
+
+musicianRouter.put("/:id", [check("name").isLength({ min: 2, max: 20 }), check("instrument").isLength({ min: 2, max: 20 })], async (req, res) => {
 	const errors = validationResult(req)
 	if (!errors.isEmpty()) {
 		res.json({ error: errors.array() })
 	} else {
-		const createMusician = await Musician.create(req.body)
-		res.json(createMusician)
+		const musicianId = req.params.id
+		const updateMusician = await Musician.update(req.body, { where: { id: musicianId } })
+		res.json(updateMusician)
 	}
-})
-
-musicianRouter.put("/:id", async (req, res) => {
-	const musicianId = req.params.id
-	const updateMusician = await Musician.update(req.body, { where: { id: musicianId } })
-	res.json(updateMusician)
 })
 
 musicianRouter.delete("/:id", async (req, res) => {

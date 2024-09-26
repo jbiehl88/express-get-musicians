@@ -31,10 +31,10 @@ describe("./musicians endpoint", () => {
 	})
 
 	it("testing update endpoint", async () => {
-		const update = { name: "Stevie Wonder" }
+		const update = { name: "Stevie" }
 		const response = await request(app).put("/musicians/4").send(update).expect(200)
 		const musician = await Musician.findByPk(4)
-		expect(musician.name).toBe("Stevie Wonder")
+		expect(musician.name).toBe("Stevie")
 	})
 
 	it("testing delete endpoint", async () => {
@@ -58,6 +58,56 @@ describe("./musicians endpoint", () => {
 		expect(response.body.error).toContainEqual(
 			expect.objectContaining({
 				type: "field",
+				msg: "Invalid value",
+				path: "instrument",
+				location: "body",
+			})
+		)
+	})
+	it("checks validator errors - length of name", async () => {
+		const response = await request(app).post("/musicians/new").send({ name: "1" })
+		expect(response.body.error).toContainEqual(
+			expect.objectContaining({
+				type: "field",
+				value: "1",
+				msg: "Invalid value",
+				path: "name",
+				location: "body",
+			})
+		)
+	})
+	it("checks validator errors - length of instrumment", async () => {
+		const response = await request(app).post("/musicians/new").send({ instrument: "A" })
+		expect(response.body.error).toContainEqual(
+			expect.objectContaining({
+				type: "field",
+				value: "A",
+				msg: "Invalid value",
+				path: "instrument",
+				location: "body",
+			})
+		)
+	})
+
+	it("checks validator errors - PUT length of name", async () => {
+		const response = await request(app).put("/musicians/1").send({ name: "1" })
+		expect(response.body.error).toContainEqual(
+			expect.objectContaining({
+				type: "field",
+				value: "1",
+				msg: "Invalid value",
+				path: "name",
+				location: "body",
+			})
+		)
+	})
+
+	it("checks validator errors - PUT length of instrumment", async () => {
+		const response = await request(app).put("/musicians/1").send({ instrument: "A" })
+		expect(response.body.error).toContainEqual(
+			expect.objectContaining({
+				type: "field",
+				value: "A",
 				msg: "Invalid value",
 				path: "instrument",
 				location: "body",
